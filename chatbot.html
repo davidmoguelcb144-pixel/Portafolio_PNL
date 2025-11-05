@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot - Minecraft Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d4a2d 25%, #3d5c3d 50%, #4a7c4a 75%, #5a9c5a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 0;
+            padding: 40px;
+            box-shadow: 
+                0 0 0 4px #8b4513,
+                0 0 0 8px #654321,
+                0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 4px solid #8b4513;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: linear-gradient(135deg, #654321 0%, #8b4513 50%, #a0522d 100%);
+            z-index: -1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 4px solid #4a7c4a;
+            background: linear-gradient(90deg, transparent, #2d4a2d, transparent);
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #55ff55;
+            text-shadow: 
+                3px 3px 0 #2d5a2d,
+                -1px -1px 0 #000000,
+                1px -1px 0 #000000,
+                -1px 1px 0 #000000,
+                1px 1px 0 #000000;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            color: #aaffaa;
+            font-size: 1.2rem;
+            font-weight: 400;
+            text-shadow: 2px 2px 0 #000000;
+        }
+
+        .code-section {
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 0;
+            padding: 30px;
+            margin-bottom: 35px;
+            border: 3px solid #4a7c4a;
+            overflow-x: auto;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.8),
+                0 4px 0 #2d5a2d;
+        }
+
+        .code-section h2 {
+            color: #ffaa00;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 0 #000000;
+        }
+
+        pre {
+            background: #0a0a0a;
+            padding: 25px;
+            border-radius: 0;
+            overflow-x: auto;
+            line-height: 1.7;
+            border: 2px solid #333333;
+        }
+
+        code {
+            color: #55ff55;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            white-space: pre;
+        }
+
+        .keyword {
+            color: #ff5555;
+            font-weight: 600;
+        }
+
+        .string {
+            color: #55ffff;
+        }
+
+        .function {
+            color: #ffaa00;
+            font-weight: 500;
+        }
+
+        .comment {
+            color: #888888;
+            font-style: italic;
+        }
+
+        .number {
+            color: #ff55ff;
+        }
+
+        .glossary {
+            background: rgba(20, 30, 20, 0.9);
+            border-radius: 0;
+            padding: 35px;
+            border: 3px solid #4a7c4a;
+            box-shadow: 
+                0 4px 0 #2d5a2d,
+                inset 0 0 30px rgba(74, 124, 74, 0.2);
+        }
+
+        .glossary h2 {
+            color: #ffaa00;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 3px 3px 0 #000000;
+        }
+
+        .glossary-item {
+            background: rgba(10, 10, 10, 0.8);
+            padding: 22px;
+            margin-bottom: 18px;
+            border-radius: 0;
+            border: 3px solid #4a7c4a;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #2d5a2d;
+        }
+
+        .glossary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #2d5a2d;
+            border-color: #5a9c5a;
+        }
+
+        .function-name {
+            color: #55ff55;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            text-shadow: 2px 2px 0 #000000;
+        }
+
+        .function-desc {
+            color: #ffffff;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .function-example {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 0;
+            font-family: 'Courier New', monospace;
+            color: #55ff55;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            border: 2px solid #333333;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .code-section, .glossary {
+                padding: 22px;
+            }
+
+            pre {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .glossary-item {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Chatbot</h1>
+            <p class="subtitle">Bot conversacional con respuestas aleatorias</p>
+        </div>
+
+        <div class="code-section">
+            <h2>⚒️ Código del Ejemplo</h2>
+            <pre><code><span class="keyword">import</span> random
+<span class="keyword">from</span> random <span class="keyword">import</span> choice
+
+<span class="keyword">saludos</span>=[<span class="string">"hola"</span>,<span class="string">"que tal"</span>,<span class="string">"buenas tardes"</span>,<span class="string">"buenos dias"</span>,<span class="string">"buen dia"</span>]
+<span class="keyword">respuesta_saludos</span>=[<span class="string">"hola, como estas?"</span>,
+                   <span class="string">"como puedo ayudarte?"</span>,
+                   <span class="string">"hola, como te va?"</span>,
+                   <span class="string">"que hay?"</span>]
+<span class="keyword">despedida</span>=[<span class="string">"adios"</span>,<span class="string">"bye"</span>,<span class="string">"gracias!"</span>,<span class="string">"nos vemos"</span>,<span class="string">"hasta luego"</span>,<span class="string">"salir"</span>]
+
+<span class="keyword">respuesta_despedida</span>=[<span class="string">"Adios"</span>,<span class="string">"Hasta pronto!"</span>,
+                     <span class="string">"Nos vemos luego!"</span>,
+                     <span class="string">"Fue un placer!"</span>,
+                     <span class="string">"Cuidate"</span>,
+                     <span class="string">"Bye"</span>]
+<span class="keyword">preguntas1</span>=[<span class="string">"como estas?"</span>,<span class="string">"bien y tu?"</span>,<span class="string">"mal y tu?"</span>]
+<span class="keyword">respuesta_preguntas1</span>=[<span class="string">"bien"</span>,<span class="string">"mal"</span>,<span class="string">"terrible"</span>,<span class="string">"excelente"</span>,<span class="string">"feliz"</span>,<span class="string">"enamorado"</span>]
+<span class="keyword">preguntas2</span>=[<span class="string">"te volarias una clase?"</span>]
+<span class="keyword">respuesta_preguntas2</span>=[<span class="string">"Si"</span>,<span class="string">"No"</span>,<span class="string">"Estas loco?"</span>,<span class="string">"Zi"</span>,<span class="string">"Ci"</span>,<span class="string">"Su pink floid no..."</span>]
+<span class="keyword">preguntas3</span>=[<span class="string">"cual es tu artista favorito?"</span>]
+<span class="keyword">respuesta_preguntas3</span>=[<span class="string">"Boywithuke"</span>,<span class="string">"Mon laferte"</span>,<span class="string">"Marshmello"</span>,<span class="string">"bbno$"</span>]
+<span class="keyword">preguntas4</span>=[<span class="string">"como te llamas?"</span>]
+<span class="keyword">respuesta4</span>=[<span class="string">"LeyendItA"</span>,<span class="string">"soy LeyendItA"</span>,<span class="string">"mi nombre es LeyendItA"</span>]
+<span class="function">print</span>(<span class="string">"Hola soy LeyendItA, tu chatbot de confianza!"</span>
+      <span class="string">"si deseas terminar escribe: Salir"</span>)
+<span class="keyword">while</span> <span class="number">True</span>:
+    <span class="keyword">usuario</span>=<span class="function">input</span>(<span class="string">"Tu:"</span>).<span class="function">lower</span>().<span class="function">strip</span>()
+
+    <span class="keyword">if</span> usuario <span class="keyword">in</span> saludos:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta_saludos))
+    <span class="keyword">elif</span> usuario <span class="keyword">in</span> despedida:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta_despedida))
+        <span class="keyword">break</span>
+    <span class="keyword">elif</span> usuario <span class="keyword">in</span> preguntas1:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta_preguntas1))
+    <span class="keyword">elif</span> usuario <span class="keyword">in</span> preguntas2:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta_preguntas2))
+    <span class="keyword">elif</span> usuario <span class="keyword">in</span> preguntas3:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta_preguntas3))
+    <span class="keyword">elif</span> usuario <span class="keyword">in</span> preguntas4:
+        <span class="function">print</span>(<span class="string">"chatbot:"</span>,random.<span class="function">choice</span>(respuesta4))</code></pre>
+        </div>
+
+        <div class="glossary">
+            <h2>📖 Glosario de Funciones</h2>
+
+            <div class="glossary-item">
+                <div class="function-name">import random</div>
+                <div class="function-desc">
+                    Importa el módulo random completo de Python, que proporciona funciones para generar números aleatorios y seleccionar elementos al azar. Permite acceder a todas las funciones del módulo usando la sintaxis random.funcion().
+                </div>
+                <div class="function-example">
+                    import random<br>
+                    numero = random.randint(1, 10)<br>
+                    # Importa el módulo completo
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">from random import choice</div>
+                <div class="function-desc">
+                    Importa específicamente la función choice del módulo random. Esta forma de importar permite usar choice() directamente sin el prefijo random. Sin embargo, en el código se usa random.choice() en lugar de solo choice().
+                </div>
+                <div class="function-example">
+                    from random import choice<br>
+                    elemento = choice([1, 2, 3])<br>
+                    # Importa solo la función choice
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">Listas [ ]</div>
+                <div class="function-desc">
+                    Estructura de datos en Python que almacena colecciones ordenadas de elementos. En este chatbot, se usan listas para almacenar posibles entradas del usuario (saludos, preguntas) y posibles respuestas del bot, permitiendo múltiples variaciones de diálogo.
+                </div>
+                <div class="function-example">
+                    saludos = ["hola", "que tal", "buenos dias"]<br>
+                    respuestas = ["Hola!", "Como estas?"]<br>
+                    # Listas con múltiples elementos
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">print()</div>
+                <div class="function-desc">
+                    Función integrada de Python que muestra información en la consola. Se usa para mostrar el mensaje de bienvenida y las respuestas del chatbot. Puede recibir múltiples argumentos separados por comas que se imprimirán separados por espacios.
+                </div>
+                <div class="function-example">
+                    print("Hola soy LeyendItA")<br>
+                    print("chatbot:", respuesta)<br>
+                    # Muestra mensajes en consola
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">while True:</div>
+                <div class="function-desc">
+                    Crea un bucle infinito que se ejecuta continuamente hasta encontrar una instrucción break. Permite que el chatbot siga conversando y respondiendo mensajes hasta que el usuario decida salir escribiendo una palabra de despedida.
+                </div>
+                <div class="function-example">
+                    while True:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;respuesta = input("Tu: ")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if respuesta == "salir":<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">input()</div>
+                <div class="function-desc">
+                    Función integrada de Python que solicita al usuario introducir texto desde la consola. Muestra el mensaje "Tu:" y espera a que el usuario escriba algo y presione Enter. Devuelve el texto ingresado como string.
+                </div>
+                <div class="function-example">
+                    usuario = input("Tu: ")<br>
+                    # Espera que el usuario escriba algo
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">.lower()</div>
+                <div class="function-desc">
+                    Método que convierte todos los caracteres de una cadena a minúsculas. Es crucial para el chatbot porque permite reconocer entradas del usuario sin importar si escriben en mayúsculas o minúsculas, haciendo la comparación más flexible.
+                </div>
+                <div class="function-example">
+                    texto = "HOLA"<br>
+                    texto_min = texto.lower()<br>
+                    # Resultado: "hola"
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">.strip()</div>
+                <div class="function-desc">
+                    Método que elimina espacios en blanco, tabulaciones y saltos de línea al inicio y al final de una cadena. Limpia la entrada del usuario de espacios accidentales que podrían impedir que el chatbot reconozca correctamente el mensaje.
+                </div>
+                <div class="function-example">
+                    texto = "  hola  "<br>
+                    limpio = texto.strip()<br>
+                    # Resultado: "hola"
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">if / elif / else</div>
+                <div class="function-desc">
+                    Estructuras condicionales que ejecutan diferentes bloques de código según las condiciones evaluadas. El chatbot usa múltiples elif para verificar a qué categoría pertenece la entrada del usuario (saludo, despedida, pregunta) y responder apropiadamente.
+                </div>
+                <div class="function-example">
+                    if usuario in saludos:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print("Hola!")<br>
+                    elif usuario in despedida:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print("Adios!")
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">Operador in</div>
+                <div class="function-desc">
+                    Operador que verifica si un elemento está presente en una secuencia (lista, tupla, string). Devuelve True si el elemento existe y False si no. El chatbot lo usa para verificar si la entrada del usuario coincide con alguna frase conocida.
+                </div>
+                <div class="function-example">
+                    if "hola" in saludos:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print("Es un saludo")<br>
+                    # Verifica si "hola" está en la lista
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">random.choice()</div>
+                <div class="function-desc">
+                    Función que selecciona y devuelve un elemento aleatorio de una secuencia (lista, tupla). El chatbot la usa para elegir una respuesta al azar de las posibles respuestas disponibles, haciendo la conversación más variada y natural.
+                </div>
+                <div class="function-example">
+                    respuestas = ["Hola", "Que tal", "Como estas"]<br>
+                    respuesta = random.choice(respuestas)<br>
+                    # Selecciona una respuesta al azar
+                </div>
+            </div>
+
+            <div class="glossary-item">
+                <div class="function-name">break</div>
+                <div class="function-desc">
+                    Palabra clave de Python que termina inmediatamente el bucle actual. Cuando el usuario escribe una palabra de despedida, el chatbot muestra un mensaje final y ejecuta break para salir del bucle while True y finalizar el programa.
+                </div>
+                <div class="function-example">
+                    if usuario in despedida:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;print("Adios!")<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;break  # Sale del bucle
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
